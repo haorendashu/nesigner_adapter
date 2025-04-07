@@ -128,5 +128,9 @@ class Nesigner implements NostrSigner {
   }
 
   @override
-  void close() {}
+  void close() {
+    if (_espService != null) {
+      _espService!.stop();
+    }
+  }
 }
