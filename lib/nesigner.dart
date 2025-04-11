@@ -53,8 +53,8 @@ class Nesigner implements NostrSigner {
   Future<bool> start() async {
     var usbTransport = UsbIsolateTransport();
     _espService = EspService(usbTransport);
-    await _espService!.start();
     _espService!.startListening();
+    await _espService!.start();
     var aesKeyBin = HEX.decode(_aesKey!);
     _espSigner = EspSigner(Uint8List.fromList(aesKeyBin), _espService!);
     return _espService!.transport.isOpen;
