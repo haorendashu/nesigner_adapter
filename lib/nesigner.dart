@@ -1,11 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:hex/hex.dart';
-import 'package:nostr_sdk/event.dart';
 import 'package:nostr_sdk/signer/nostr_signer.dart';
-import 'package:flutter_nesigner_sdk/flutter_nesigner_sdk.dart';
 
-class Nesigner implements NostrSigner {
+import 'nesigner_helper.dart'
+    if (dart.library.io) 'nesigner_io.dart'
+    if (dart.library.js) 'nesigner_web.dart';
+
+abstract class Nesigner extends NostrSigner {
   static String URI_PRE = "nesigner";
 
   static bool isNesignerKey(String key) {
@@ -33,104 +34,12 @@ class Nesigner implements NostrSigner {
     return key;
   }
 
-  EspSigner? _espSigner;
+  factory Nesigner(String aesKey, {String? pubkey}) =>
+      getNesignerInstance(aesKey, pubkey: pubkey);
 
-  EspService? _espService;
+  // start the nesigner service.
+  Future<bool> start();
 
-  String? _aesKey;
-
-  String? _pubkey;
-
-  Nesigner(String aesKey, {String? pubkey}) {
-    _aesKey = aesKey;
-    _pubkey = pubkey;
-  }
-
-  EspService? getEspService() {
-    return _espService;
-  }
-
-  Future<bool> start() async {
-    var usbTransport = UsbIsolateTransport();
-    _espService = EspService(usbTransport);
-    _espService!.startListening();
-    await _espService!.start();
-    var aesKeyBin = HEX.decode(_aesKey!);
-    _espSigner = EspSigner(Uint8List.fromList(aesKeyBin), _espService!);
-    return _espService!.transport.isOpen;
-  }
-
-  @override
-  Future<String?> decrypt(pubkey, ciphertext) async {
-    if (_espSigner != null) {
-      return await _espSigner!.decrypt(pubkey, ciphertext);
-    }
-
-    return null;
-  }
-
-  @override
-  Future<String?> encrypt(pubkey, plaintext) async {
-    if (_espSigner != null) {
-      return await _espSigner!.encrypt(pubkey, plaintext);
-    }
-
-    return null;
-  }
-
-  @override
-  Future<String?> getPublicKey() async {
-    if (_pubkey != null) {
-      return _pubkey;
-    }
-
-    if (_espSigner != null) {
-      _pubkey = await _espSigner!.getPublicKey();
-    }
-
-    return _pubkey;
-  }
-
-  @override
-  Future<Map?> getRelays() async {
-    return {};
-  }
-
-  @override
-  Future<String?> nip44Decrypt(pubkey, ciphertext) async {
-    if (_espSigner != null) {
-      return await _espSigner!.nip44Decrypt(pubkey, ciphertext);
-    }
-
-    return null;
-  }
-
-  @override
-  Future<String?> nip44Encrypt(pubkey, plaintext) async {
-    if (_espSigner != null) {
-      return await _espSigner!.nip44Encrypt(pubkey, plaintext);
-    }
-
-    return null;
-  }
-
-  @override
-  Future<Event?> signEvent(Event event) async {
-    if (_espSigner != null) {
-      var eventMap = await _espSigner!.signEvent(event.toJson());
-      if (eventMap != null) {
-        var event = Event.fromJson(eventMap);
-        return event;
-      }
-    }
-
-    return null;
-  }
-
-  @override
-  void close() {
-    if (_espService != null) {
-      _espService!.stop();
-    }
-  }
+  // update the private key.
+  Future<int?> updateKey(Uint8List aesKey, String key);
 }
