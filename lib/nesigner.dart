@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:nostr_sdk/signer/nostr_signer.dart';
+import 'package:nostr_sdk/utils/string_util.dart';
 
 import 'nesigner_helper.dart'
     if (dart.library.io) 'nesigner_io.dart'
@@ -32,6 +33,14 @@ abstract class Nesigner extends NostrSigner {
     }
 
     return key;
+  }
+
+  static String genKey(String aesKey, {String? pubkey}) {
+    if (StringUtil.isNotBlank(pubkey)) {
+      return "${Nesigner.URI_PRE}:$aesKey?pubkey=$pubkey";
+    }
+
+    return "${Nesigner.URI_PRE}:$aesKey";
   }
 
   factory Nesigner(String aesKey, {String? pubkey}) =>
