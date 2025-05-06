@@ -9,7 +9,7 @@ class NesignerUtil {
     nesignerSetMacOSArchIsArm(isArm);
   }
 
-  static bool nesignerExist() {
+  static bool checkNesignerExist() {
     return nesignerExist();
   }
 }
