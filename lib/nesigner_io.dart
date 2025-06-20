@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:hex/hex.dart';
 import 'package:nostr_sdk/event.dart';
+import 'package:nostr_sdk/utils/string_util.dart';
 
 import 'nesigner.dart';
 import 'package:flutter_nesigner_sdk/flutter_nesigner_sdk.dart';
@@ -34,8 +36,21 @@ class NesignerIO implements Nesigner {
 
   @override
   Future<bool> start() async {
-    var usbTransport = UsbIsolateTransport();
-    _espService = EspService(usbTransport);
+    List<SerialPort>? nesignerPorts;
+    if (Platform.isAndroid) {
+      nesignerPorts = await AndroidSerialPort.getNesignerPorts();
+    } else if (!Platform.isIOS) {
+      nesignerPorts = BaseSerialPort.getNesignerPorts();
+    }
+    if (nesignerPorts == null || nesignerPorts.isEmpty) {
+      print("No nesigner ports found.");
+      print(nesignerPorts);
+      return false;
+    }
+
+    SerialPort serialPort = nesignerPorts.first;
+    _espService = EspService(serialPort);
+
     _espService!.startListening();
     await _espService!.start();
     var aesKeyBin = HEX.decode(_aesKey!);
@@ -122,10 +137,21 @@ Nesigner getNesignerInstance(String aesKey, {String? pubkey}) {
   return NesignerIO(aesKey, pubkey: pubkey);
 }
 
-void nesignerSetMacOSArchIsArm(bool isArm) {
-  UsbTransport.setMacOSArchIsArm(isArm);
-}
+// void nesignerSetMacOSArchIsArm(bool isArm) {
+//   UsbTransport.setMacOSArchIsArm(isArm);
+// }
 
-bool nesignerExist() {
-  return UsbTransport.existNesigner();
+Future<bool> nesignerExist() async {
+  List<SerialPort>? nesignerPorts;
+  if (Platform.isAndroid) {
+    nesignerPorts = await AndroidSerialPort.getNesignerPorts();
+  } else if (!Platform.isIOS) {
+    nesignerPorts = BaseSerialPort.getNesignerPorts();
+  }
+  if (nesignerPorts == null || nesignerPorts.isEmpty) {
+    return false;
+  }
+
+  return true;
+  // return UsbTransport.existNesigner();
 }

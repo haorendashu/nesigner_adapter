@@ -5,11 +5,11 @@ import 'nesigner_helper.dart'
     if (dart.library.js) 'nesigner_web.dart';
 
 class NesignerUtil {
-  static void setMacOSArchIsArm(bool isArm) {
-    nesignerSetMacOSArchIsArm(isArm);
-  }
+  // static void setMacOSArchIsArm(bool isArm) {
+  //   nesignerSetMacOSArchIsArm(isArm);
+  // }
 
-  static bool checkNesignerExist() {
-    return nesignerExist();
+  static Future<bool> checkNesignerExist() async {
+    return await nesignerExist();
   }
 }
