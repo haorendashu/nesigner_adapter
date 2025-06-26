@@ -17,7 +17,7 @@ abstract class Nesigner extends NostrSigner {
     return false;
   }
 
-  static String getAesKeyFromKey(String key) {
+  static String getPinCodeFromKey(String key) {
     var strs = key.split(":");
     if (strs.length >= 2) {
       return strs[1].split("?")[0];
@@ -35,20 +35,20 @@ abstract class Nesigner extends NostrSigner {
     return key;
   }
 
-  static String genKey(String aesKey, {String? pubkey}) {
+  static String genKey(String pinCode, {String? pubkey}) {
     if (StringUtil.isNotBlank(pubkey)) {
-      return "${Nesigner.URI_PRE}:$aesKey?pubkey=$pubkey";
+      return "${Nesigner.URI_PRE}:$pinCode?pubkey=$pubkey";
     }
 
-    return "${Nesigner.URI_PRE}:$aesKey";
+    return "${Nesigner.URI_PRE}:$pinCode";
   }
 
-  factory Nesigner(String aesKey, {String? pubkey}) =>
-      getNesignerInstance(aesKey, pubkey: pubkey);
+  factory Nesigner(String pinCode, {String? pubkey}) =>
+      getNesignerInstance(pinCode, pubkey: pubkey);
 
   // start the nesigner service.
   Future<bool> start();
 
   // update the private key.
-  Future<int?> updateKey(Uint8List aesKey, String key);
+  Future<int?> updateKey(String pinCode, String key);
 }

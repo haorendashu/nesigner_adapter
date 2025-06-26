@@ -48,12 +48,12 @@ class NesignerWeb implements Nesigner {
   }
 
   @override
-  Future<int?> updateKey(Uint8List aesKey, String key) {
+  Future<int?> updateKey(String pinCode, String key) {
     throw UnimplementedError();
   }
 }
 
-Nesigner getNesignerInstance(String aesKey, {String? pubkey}) =>
+Nesigner getNesignerInstance(String pinCode, {String? pubkey}) =>
     throw UnsupportedError('Unsupported Platform');
 
 Future<bool> nesignerExist() => throw UnsupportedError('Unsupported Platform');

@@ -13,12 +13,12 @@ class NesignerIO implements Nesigner {
 
   EspService? _espService;
 
-  String? _aesKey;
+  late String _pinCode;
 
   String? _pubkey;
 
-  NesignerIO(String aesKey, {String? pubkey}) {
-    _aesKey = aesKey;
+  NesignerIO(String pinCode, {String? pubkey}) {
+    _pinCode = pinCode;
     _pubkey = pubkey;
   }
 
@@ -26,9 +26,9 @@ class NesignerIO implements Nesigner {
   //   return _espService;
   // }
   @override
-  Future<int?> updateKey(Uint8List aesKey, String key) async {
+  Future<int?> updateKey(String pinCode, String key) async {
     if (_espService != null) {
-      return _espService!.updateKey(aesKey, key);
+      return _espService!.updateKey(pinCode, key);
     }
 
     return null;
@@ -53,8 +53,7 @@ class NesignerIO implements Nesigner {
 
     _espService!.startListening();
     await _espService!.start();
-    var aesKeyBin = HEX.decode(_aesKey!);
-    _espSigner = EspSigner(Uint8List.fromList(aesKeyBin), _espService!);
+    _espSigner = EspSigner(_pinCode, _espService!);
     return _espService!.transport.isOpen;
   }
 
@@ -133,8 +132,8 @@ class NesignerIO implements Nesigner {
   }
 }
 
-Nesigner getNesignerInstance(String aesKey, {String? pubkey}) {
-  return NesignerIO(aesKey, pubkey: pubkey);
+Nesigner getNesignerInstance(String pinCode, {String? pubkey}) {
+  return NesignerIO(pinCode, pubkey: pubkey);
 }
 
 // void nesignerSetMacOSArchIsArm(bool isArm) {

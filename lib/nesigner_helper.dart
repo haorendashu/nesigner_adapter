@@ -1,6 +1,6 @@
 import 'nesigner.dart';
 
-Nesigner getNesignerInstance(String aesKey, {String? pubkey}) =>
+Nesigner getNesignerInstance(String pinCode, {String? pubkey}) =>
     throw UnsupportedError('Unsupported Platform');
 
 Future<bool> nesignerExist() => throw UnsupportedError('Unsupported Platform');
