@@ -51,8 +51,8 @@ class NesignerIO implements Nesigner {
     SerialPort serialPort = nesignerPorts.first;
     _espService = EspService(serialPort);
 
-    _espService!.startListening();
     await _espService!.start();
+    _espService!.startListening();
     _espSigner = EspSigner(_pinCode, _espService!);
     return _espService!.transport.isOpen;
   }
