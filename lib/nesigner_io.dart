@@ -40,7 +40,8 @@ class NesignerIO implements Nesigner {
     if (Platform.isAndroid) {
       nesignerPorts = await AndroidSerialPort.getNesignerPorts();
     } else if (!Platform.isIOS) {
-      nesignerPorts = BaseSerialPort.getNesignerPorts();
+      // nesignerPorts = BaseSerialPort.getNesignerPorts();
+      nesignerPorts = IsolateSerialPort.getNesignerPorts();
     }
     if (nesignerPorts == null || nesignerPorts.isEmpty) {
       print("No nesigner ports found.");
@@ -144,7 +145,8 @@ Future<bool> nesignerExist() async {
   if (Platform.isAndroid) {
     nesignerPorts = await AndroidSerialPort.getNesignerPorts();
   } else if (!Platform.isIOS) {
-    nesignerPorts = BaseSerialPort.getNesignerPorts();
+    // nesignerPorts = BaseSerialPort.getNesignerPorts();
+    nesignerPorts = IsolateSerialPort.getNesignerPorts();
   }
   if (nesignerPorts == null || nesignerPorts.isEmpty) {
     return false;
